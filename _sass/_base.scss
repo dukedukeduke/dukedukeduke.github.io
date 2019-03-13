@@ -12,16 +12,18 @@ dl, dd, ol, ul, figure {
 }
 
 table{
-    border-left:1px solid #000000;border-top:1px solid #000000;
-    width: 100%;
-    word-wrap:break-word; word-break:break-all;
-  }
-  table th{
-  text-align:center;
-  }
-  table th,td{
-    border-right:1px solid #000000;border-bottom:1px solid #000000;
-  }
+    border-collapse: collapse;
+    border-spacing: 0;
+    border:2px solid #ff0000;
+}
+
+th{
+    border:2px solid #000000;
+}
+
+td{
+    border:1px solid #000000;
+}
 
 
 /**
