@@ -41,8 +41,8 @@ VARCHAR(21844) CHARACTER SET utf8;Please stop using CHARACTER SET utf8 in exampl
 
 ### 存储举例
 |---
-|Value | CHAR(4) | STORAGE REQUIRED | VARCHAR(4) | STORAGE REQUIRED|
-|'' |'    ' |4 bytes |'' |1 byte|
-|'ab' |'ab  ' |4 bytes |'ab' |3 bytes|
-|'abcd' |'abcd' |4 bytes |'abcd' |5 bytes|
-|'abcdefgh' |'abcd' |4 bytes |'abcd' |5 bytes|
+|Value | CHAR(4) | STORAGE REQUIRED | VARCHAR(4) | STORAGE REQUIRED
+|'' |'    ' |4 bytes |'' |1 byte
+|'ab' |'ab  ' |4 bytes |'ab' |3 bytes
+|'abcd' |'abcd' |4 bytes |'abcd' |5 bytes
+|'abcdefgh' |'abcd' |4 bytes |'abcd' |5 bytes
