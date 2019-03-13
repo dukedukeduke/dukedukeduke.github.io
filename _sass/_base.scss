@@ -14,15 +14,19 @@ dl, dd, ol, ul, figure {
 table{
     border-collapse: collapse;
     border-spacing: 0;
-    border:2px solid #ff0000;
+    border:1px solid #ff0000;
 }
 
 th{
     border:2px solid #000000;
+    padding-left:1px;
+    padding-right:1px;
 }
 
 td{
     border:1px solid #000000;
+    padding-left:1px;
+    padding-right:1px;
 }
 
 
