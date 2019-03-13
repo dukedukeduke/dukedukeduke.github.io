@@ -40,6 +40,7 @@ VARCHAR(21844) CHARACTER SET utf8;Please stop using CHARACTER SET utf8 in exampl
 数据的检索效率是：char > varchar > text
 
 ### 存储举例
+
 |---
 | Value | CHAR(4) | STORAGE REQUIRED | VARCHAR(4) | STORAGE REQUIRED
 | '' | '    ' | 4 bytes | '' | 1 byte
