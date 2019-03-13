@@ -86,7 +86,6 @@ For example, a column specified as ENUM('Mercury', 'Venus', 'Earth') can have an
 
 |---
 |Value | index|
-:-:|:-
 |NULL | NULL|
 |'' | 0|
 |'Mercury' | 1|
