@@ -84,11 +84,12 @@ mysql> SELECT * FROM tbl_name WHERE enum_col=0;
 
 For example, a column specified as ENUM('Mercury', 'Venus', 'Earth') can have any of the values shown here. The index of each value is also shown
 
-Value | index
----|---
-NULL | NULL
-'' | 0
-'Mercury' | 1
-'Venus' | 2
-'Earth' | 3
+|---
+|Value | index|
+:-:|:-
+|NULL | NULL|
+|'' | 0|
+|'Mercury' | 1|
+|'Venus' | 2|
+|'Earth' | 3|
 
