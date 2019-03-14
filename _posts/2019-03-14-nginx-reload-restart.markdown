@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "reload与restart的区别"
+title:  "nginx reload与restart的区别"
 date:   2019-03-14 9:27:02 +0800
 comments: true
 tags:
