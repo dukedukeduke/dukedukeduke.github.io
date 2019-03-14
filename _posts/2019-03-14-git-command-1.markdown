@@ -18,10 +18,10 @@ https://www.w3cschool.cn/git/git-branch.html
 从远程主机克隆一个版本库
 
 ```
-$ git clone <版本库的网址> <本地目录名>
+$ git clone 版本库的网址 本地目录名
 ```
 
-<本地目录名>可省略
+本地目录名 可省略
 
 ```
 $ git clone https://github.com/jquery/jquery.git
@@ -106,7 +106,7 @@ git pull -p
 用于将本地分支的更新，推送到远程主机.
 
 ```
-git push <远程主机名> <本地分支名>:<远程分支名>
+git push 远程主机名 本地分支名:远程分支名
 ```
 
 如果省略远程分支名，则表示将本地分支推送与之存在"追踪关系"的远程分支（通常两者同名），如果该远程分支不存在，则会被新建。
