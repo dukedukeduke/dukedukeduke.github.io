@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "git 常用命令"
+title:  "git 常用命令-more"
 date:   2019-03-18 16:27:02 +0800
 comments: true
 tags:
