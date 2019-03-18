@@ -245,7 +245,7 @@ CONFLICT (content): Merge conflict in index.js
 ```
 
 #### 6. 进行冲突修复：
-VCS -> Git -> Resolve Conflicts -> MERGE,中间代码为最终的合并结果，点击apply即可生效。
+VCS - Git - Resolve Conflicts - MERGE,中间代码为最终的合并结果，点击apply即可生效。
 
 如果修改完bug代码不进行commit和push,步骤如下：
 #### 4. git add, git commit -m "提交bug修复代码"
