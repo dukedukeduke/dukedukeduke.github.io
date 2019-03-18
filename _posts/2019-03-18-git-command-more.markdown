@@ -18,10 +18,10 @@ https://www.w3cschool.cn/git/git-branch.html
 从远程主机克隆一个版本库
 
 ```
-$ git clone <版本库的网址> <本地目录名>
+$ git clone 版本库的网址 本地目录名
 ```
 
-<本地目录名>可省略
+本地目录名 可省略
 
 ```
 $ git clone https://github.com/jquery/jquery.git
