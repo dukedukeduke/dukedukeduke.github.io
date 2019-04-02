@@ -19,4 +19,4 @@ tags:
 ->提交->进入阿里云CDN控制台->查看域名管理获得cdn的域名->
 ![](https://note.youdao.com/yws/res/22537/WEBRESOURCEd10d22af85de0013d9eca2fd12d66508)
 进入阿里云域名解析->将填入的子域名解析成cdn域名提交
-![](https://note.youdao.com/yws/res/22542/WEBRESOURCE87ff4c66c3273f139a3e5bfd6b5ba9b2)
+![](https://note.youdao.com/yws/res/22547/WEBRESOURCE7aa150fa454dbb31df58a39eac96a677)
