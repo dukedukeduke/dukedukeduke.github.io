@@ -12,6 +12,7 @@ tags:
 #### 前置条件
 1. 已经申请了bucket
 2. 当前用户具有CDN编辑权限
+3. bucket权限需改为public,资源才能被访问
 
 #### cdn
 
@@ -35,3 +36,6 @@ Update
 最后会获得一个ip地址， 比如：
 
 ![](http://note.youdao.com/yws/res/22482/WEBRESOURCE3d01e4aa1e09390cbcfeb28842adaad9)
+
+#### 后续
+可对该IP地址进行DNS解析
