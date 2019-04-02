@@ -24,7 +24,7 @@ ADD ORIGIN -> Select origin -> Create a load balancer ->
 Load balancer Name ->
 
 Backend configuration -> Create or select backend services&backend bucket -> Backend buckets -> Create a buckend bucket -> bucket Name ->Browse (select the google storage bucket) -> Enable Cloud CDN -> Create -> 
-![](https://note.youdao.com/yws/res/22493/WEBRESOURCE00713d5c1ffc63209994d06995d16870)
+![](https://note.youdao.com/yws/res/22504/WEBRESOURCE56623a2d9c0b9ed49a0c21d58e1d82b3)
 Host and path rules -> Hosts:*, Paths:/*,Bucket:[created just now] -> 
 ![](https://note.youdao.com/yws/res/22496/WEBRESOURCE92cd71c350e89c972a3171a361f76b4b)
 Frontend configuration -> Name -> http?https(https need provide cert) -> Done -> 
