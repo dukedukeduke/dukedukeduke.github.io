@@ -411,3 +411,283 @@ wg.Wait()
 - 协程运行结束调用Done
 
 同时， Wait阻塞直到这俩协程运行完成。
+
+#### 使用channel广播信号
+当channel关闭， 所有读者会接收到零值。
+下面这个例子，Publish函数返回一个channel，用来当消息被published之后，广播一个信号。
+
+```
+// Print text after the given time has expired.
+// When done, the wait channel is closed.
+func Publish(text string, delay time.Duration) (wait <-chan struct{}) {
+    ch := make(chan struct{})
+    go func() {
+        time.Sleep(delay)
+        fmt.Println("BREAKING NEWS:", text)
+        close(ch) // Broadcast to all receivers.
+    }()
+    return ch
+}
+```
+
+之一当使用一个空struct的channel：struct{}。这清楚地表明这个channel只能用于信号传递，而不是数据传递。
+
+下面展示了怎样使用这个函数：
+
+```
+func main() {
+    wait := Publish("Channels let goroutines communicate.", 5*time.Second)
+    fmt.Println("Waiting for news...")
+    <-wait
+    fmt.Println("Time to leave.")
+}
+//output
+
+Waiting for news...
+BREAKING NEWS: Channels let goroutines communicate.
+Time to leave.
+```
+
+#### 怎样结束一个go协程
+要使一个协程结束， 让其监听一个传递的停止信号的channel。如下：
+
+```
+quit := make(chan struct{})
+go func() {
+    for {
+        select {
+        case <-quit:
+            return
+        default:
+            // …
+        }
+    }
+}()
+// …
+close(quit)
+```
+
+可以很方便的使用channel来传递信号和数据:
+
+```
+// Generator returns a channel that produces the numbers 1, 2, 3,…
+// To stop the underlying goroutine, close the channel.
+func Generator() chan int {
+    ch := make(chan int)
+    go func() {
+        n := 1
+        for {
+            select {
+            case ch <- n:
+                n++
+            case <-ch:
+                return
+            }
+        }
+    }()
+    return ch
+}
+
+func main() {
+    number := Generator()
+    fmt.Println(<-number)
+    fmt.Println(<-number)
+    close(number)
+    // …
+}
+
+//output
+
+1
+2
+```
+
+#### Timer和Ticker:events in the future
+
+Timer和Ticker可以让你在将来的某个时候一次或者重复的执行某段代码。
+
+##### Timeout(Timer)
+time.After 等待一个指定的时间, 当时间到会发送当前时间到channel（返回一个channel）：
+
+```
+select {
+case news := <-AFP:
+	fmt.Println(news)
+case <-time.After(time.Hour):
+	fmt.Println("No news in an hour.")
+}
+```
+
+time.Timer不会被gc回收直到timer铃响, 如果有必要， 使用time.NewTimer替代，并且使用Stop方法当timer不再需要时。
+
+```
+for alive := true; alive; {
+	timer := time.NewTimer(time.Hour)
+	select {
+	case news := <-AFP:
+		timer.Stop()
+		fmt.Println(news)
+	case <-timer.C:
+		alive = false
+		fmt.Println("No news in an hour. Service aborting.")
+	}
+}
+```
+
+##### Repeat(Ticker)
+time.Ticker 返回一个每到固定时间间隔就装载时钟tick的channel。
+
+```
+go func() {
+	for now := range time.Tick(time.Minute) {
+		fmt.Println(now, statusUpdate())
+	}
+}()
+```
+
+time.Ticker不会被gc回收。如果有必要， 使用tick.NewTicker代替并且在不需要ticker的时候调用Stop方法。
+
+##### Wait, act and cancel
+time.AfterFunc等待一个特定的时间然后在当前携程调用一个函数。返回time.Timer类型用来取消这个函数调用。
+
+```
+func Foo() {
+    timer = time.AfterFunc(time.Minute, func() {
+        log.Println("Foo run for more than a minute.")
+    })
+    defer timer.Stop()
+
+    // Do heavy work
+}
+```
+
+#### Mutual exclusion lock (mutex)
+某些时候使用锁而不是channel来同步数据访问会更方便。go标准库提供了sync.Mutex包用于锁实现。
+
+##### 小心使用
+使用这个锁类型需要小心，这在访问共享数据是十分重要，在协程拥有数据锁的时候才能读写数据。其中一个协程的失误都可能造成数据竞争而到最后程序出错。 
+
+正是这个原因， 需要详细考虑设计数据结构和清晰的api，以保证所有的同步在其内部完成。
+
+在下面的这个例子中， 建立了安全和易于使用的 并行数据结构。
+AtomicInt, 存储了一个整型数据。任何数量的协程都能通过Add和Value方法安全的访问这个数据。
+
+```
+// AtomicInt is a concurrent data structure that holds an int.
+// Its zero value is 0.
+type AtomicInt struct {
+    mu sync.Mutex // A lock than can be held by one goroutine at a time.
+    n  int
+}
+
+// Add adds n to the AtomicInt as a single atomic operation.
+func (a *AtomicInt) Add(n int) {
+    a.mu.Lock() // Wait for the lock to be free and then take it.
+    a.n += n
+    a.mu.Unlock() // Release the lock.
+}
+
+// Value returns the value of a.
+func (a *AtomicInt) Value() int {
+    a.mu.Lock()
+    n := a.n
+    a.mu.Unlock()
+    return n
+}
+
+func main() {
+    wait := make(chan struct{})
+    var n AtomicInt
+    go func() {
+        n.Add(1) // one access
+        close(wait)
+    }()
+    n.Add(1) // another concurrent access
+    <-wait
+    fmt.Println(n.Value()) // 2
+}
+```
+
+#### 3条高效并行计算的规则
+下面是这三条规则：
+
+- 分解任务到花费100us-1ms时间的小任务。
+1. 如果小人物粒度太小，管理单个任务的难度会越大。
+2. 如果粒度太大，整个计算程序可能会等待某个任务从而拖慢整个任务执行。有很多原因可能会造成这种结果，比如调度，其他进程的中断，以及不能判断的内存分布。
+
+- 尽量减小共享的数据数量
+1. 并行写很昂贵，特别是协程运行在多个CPU上
+2. 并行读造成的问题更少
+
+- 通过好的途径来访问数据
+1. 如果数据在cache中，数据加载和存储会更快
+2. 在强调一次，对于写操作，着更更为重要
+
+不管你运用什么方法， 不要忘记量化和标准化你的代码。
+
+##### 举例
+下面的例子展示了如何分解一个复杂的计算， 并且将其分配到可用的CPU上。
+
+```
+type Vector []float64
+
+// Convolve computes w = u * v, where w[k] = Σ u[i]*v[j], i + j = k.
+// Precondition: len(u) > 0, len(v) > 0.
+func Convolve(u, v Vector) Vector {
+    n := len(u) + len(v) - 1
+    w := make(Vector, n)
+    for k := 0; k < n; k++ {
+        w[k] = mul(u, v, k)
+    }
+    return w
+}
+
+// mul returns Σ u[i]*v[j], i + j = k.
+func mul(u, v Vector, k int) float64 {
+    var res float64
+    n := min(k+1, len(u))
+    j := min(k, len(v)-1)
+    for i := k - j; i < n; i, j = i+1, j-1 {
+        res += u[i] * v[j]
+    }
+    return res
+}
+```
+
+方法很简单：确定合适粒度，从每个小任务在一个独立的协程运行。下面是并行的版本：
+
+```
+func Convolve(u, v Vector) Vector {
+    n := len(u) + len(v) - 1
+    w := make(Vector, n)
+
+    // Divide w into work units that take ~100μs-1ms to compute.
+    size := max(1, 1000000/n)
+
+    var wg sync.WaitGroup
+    for i, j := 0, size; i < n; i, j = j, j+size {
+        if j > n {
+            j = n
+        }
+        // These goroutines share memory, but only for reading.
+        wg.Add(1)
+        go func(i, j int) {
+            for k := i; k < j; k++ {
+                w[k] = mul(u, v, k)
+            }
+            wg.Done()
+        }(i, j)
+    }
+    wg.Wait()
+    return w
+}
+```
+
+当任务粒度确定后， 就交给调度程序和操作系统执行是最好的方法。然而，如果有必要，可以告诉runtime你想有多少个协程同时执行代码。
+
+```
+func init() {
+    numcpu := runtime.NumCPU()
+    runtime.GOMAXPROCS(numcpu) // Try to use all available CPUs.
+}
+```
