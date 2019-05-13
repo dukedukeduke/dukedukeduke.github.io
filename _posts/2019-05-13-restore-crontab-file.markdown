@@ -10,7 +10,6 @@ tags:
 - crontab
 ---
 
-```
 #### Intro
 This Saturday, I lost my crontab task file because of input wrong command by mistake, use crontab -r to instead crontab -e.
 that's a big trouble， that means this mistake may cause all tasks stop.
@@ -83,4 +82,3 @@ You can also find the related command for resotring directory, or all files(--re
 
 For ubuntu, you can install this tools by apt-get tool easily.
 
-```
